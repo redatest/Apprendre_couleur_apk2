@@ -17,9 +17,13 @@ Installation : ouvrir le lien sur le téléphone Android, télécharger, puis au
 
 Couleurs : حمر (hmar), زرق (zerq), خضر (khdhar), صفر (sfar), برتقالي (bortoqali), بنفسجي (banafsaji), وردي (wardi), بيض (bayad), كحل (kahl), قهوي (qahwi).
 
-## Voix
+## Voix et son
 
-L'application utilise la synthèse vocale Android en arabe. Si aucun son : *Paramètres → Gestion globale → Synthèse vocale (Google)* → installer la voix arabe. La prononciation reste approximative (voix arabe standard) ; le vocabulaire et le texte lu se modifient dans la liste `ITEMS` de `MainActivity.kt`.
+Ordre de priorité pour dire une couleur : **voix enregistrée par le parent** > synthèse vocale arabe d'Android > simple bip.
+
+- **Enregistrer votre propre voix (recommandé, vrai darija)** : en mode apprentissage, appuyez longuement sur une carte → *Enregistrer* → dites le mot → *Arrêter*. Le téléphone demande l'autorisation du micro la première fois.
+- **Si un bandeau orange « Voix arabe introuvable » apparaît** : touchez-le pour installer la voix arabe (Synthèse vocale Google), puis revenez dans l'app. Sur les téléphones sans services Google (certains Huawei), utilisez plutôt l'enregistrement.
+- Pas de son du tout : vérifier le volume **média** (les touches de volume le contrôlent dans l'app) et que le téléphone n'est pas en silencieux.
 
 ## Compilation
 
