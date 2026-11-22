@@ -20,21 +20,22 @@ import android.widget.TextView
 /**
  * ar    : mot affiché (arabe standard)
  * latin : transcription pour le parent
- * sound : clip audio intégré à l'application (res/raw)
+ * sound : clip audio du nom de la couleur (res/raw)
+ * ask   : clip audio « أين الـ… ؟ » utilisé dans le jeu
  */
-data class ColorItem(val color: Int, val ar: String, val latin: String, val sound: Int)
+data class ColorItem(val color: Int, val ar: String, val latin: String, val sound: Int, val ask: Int)
 
 private val ITEMS = listOf(
-    ColorItem(0xFFE53935.toInt(), "أحمر", "ahmar", R.raw.c_ahmar),
-    ColorItem(0xFF1E88E5.toInt(), "أزرق", "azraq", R.raw.c_azraq),
-    ColorItem(0xFF43A047.toInt(), "أخضر", "akhdar", R.raw.c_akhdar),
-    ColorItem(0xFFFDD835.toInt(), "أصفر", "asfar", R.raw.c_asfar),
-    ColorItem(0xFFFB8C00.toInt(), "برتقالي", "burtuqali", R.raw.c_burtuqali),
-    ColorItem(0xFF8E24AA.toInt(), "بنفسجي", "banafsaji", R.raw.c_banafsaji),
-    ColorItem(0xFFF06292.toInt(), "وردي", "wardi", R.raw.c_wardi),
-    ColorItem(0xFFFFFFFF.toInt(), "أبيض", "abyad", R.raw.c_abyad),
-    ColorItem(0xFF212121.toInt(), "أسود", "aswad", R.raw.c_aswad),
-    ColorItem(0xFF6D4C41.toInt(), "بني", "bunni", R.raw.c_bunni)
+    ColorItem(0xFFE53935.toInt(), "أحمر", "ahmar", R.raw.c_ahmar, R.raw.q_ahmar),
+    ColorItem(0xFF1E88E5.toInt(), "أزرق", "azraq", R.raw.c_azraq, R.raw.q_azraq),
+    ColorItem(0xFF43A047.toInt(), "أخضر", "akhdar", R.raw.c_akhdar, R.raw.q_akhdar),
+    ColorItem(0xFFFDD835.toInt(), "أصفر", "asfar", R.raw.c_asfar, R.raw.q_asfar),
+    ColorItem(0xFFFB8C00.toInt(), "برتقالي", "burtuqali", R.raw.c_burtuqali, R.raw.q_burtuqali),
+    ColorItem(0xFF8E24AA.toInt(), "بنفسجي", "banafsaji", R.raw.c_banafsaji, R.raw.q_banafsaji),
+    ColorItem(0xFFF06292.toInt(), "وردي", "wardi", R.raw.c_wardi, R.raw.q_wardi),
+    ColorItem(0xFFFFFFFF.toInt(), "أبيض", "abyad", R.raw.c_abyad, R.raw.q_abyad),
+    ColorItem(0xFF212121.toInt(), "أسود", "aswad", R.raw.c_aswad, R.raw.q_aswad),
+    ColorItem(0xFF6D4C41.toInt(), "بني", "bunni", R.raw.c_bunni, R.raw.q_bunni)
 )
 
 private val PRAISE = intArrayOf(R.raw.pr_raai, R.raw.pr_mumtaz, R.raw.pr_ahsanta)
@@ -172,13 +173,13 @@ class MainActivity : Activity() {
         col.gravity = Gravity.CENTER
 
         val prompt = TextView(this)
-        prompt.text = "🔊  أين اللون؟"
-        prompt.textSize = 36f
+        prompt.text = "🔊  أين ال${target.ar}؟"
+        prompt.textSize = 32f
         prompt.gravity = Gravity.CENTER
         prompt.setTypeface(null, Typeface.BOLD)
         prompt.setTextColor(0xFF4E342E.toInt())
         prompt.setPadding(0, 0, 0, dp(6))
-        prompt.setOnClickListener { play(R.raw.p_ayna, target.sound) }
+        prompt.setOnClickListener { play(target.ask) }
         col.addView(prompt, LinearLayout.LayoutParams(MATCH, WRAP))
 
         val word = TextView(this)
@@ -207,7 +208,7 @@ class MainActivity : Activity() {
         col.addView(row, LinearLayout.LayoutParams(MATCH, WRAP))
 
         content.addView(col, FrameLayout.LayoutParams(MATCH, MATCH))
-        content.postDelayed({ if (gameMode) play(R.raw.p_ayna, target.sound) }, 500)
+        content.postDelayed({ if (gameMode) play(target.ask) }, 500)
     }
 
     private fun onChoice(item: ColorItem, card: View, shape: ShapeView) {

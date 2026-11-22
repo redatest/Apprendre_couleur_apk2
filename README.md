@@ -13,15 +13,15 @@ Installation : ouvrir le lien sur le téléphone Android, télécharger, puis au
 ## Fonctionnement
 
 - **Mode apprentissage 📚** : 10 cartes avec une forme colorée souriante (cercle, carré, triangle, étoile, cœur). Un appui = la forme tourne et rebondit, des confettis éclatent et le nom de la couleur est dit deux fois.
-- **Mode jeu 🎮** : « أين اللون ؟ » puis le nom de la couleur ; l'enfant touche la bonne forme parmi 3. Bonne réponse = confettis + « رائع / ممتاز / أحسنت ». Mauvaise réponse = la carte tremble et l'app dit « لا، هذا … » suivi de la couleur touchée.
+- **Mode jeu 🎮** : « أين الأحمر ؟ » (avec la couleur demandée) ; l'enfant touche la bonne forme parmi 3. Bonne réponse = confettis + « رائع / ممتاز / أحسنت ». Mauvaise réponse = la carte tremble et l'app dit « لا، هذا … » suivi de la couleur touchée.
 
 Couleurs : أحمر (ahmar), أزرق (azraq), أخضر (akhdar), أصفر (asfar), برتقالي (burtuqali), بنفسجي (banafsaji), وردي (wardi), أبيض (abyad), أسود (aswad), بني (bunni).
 
 ## Sons
 
-Les 15 clips sont dans `app/src/main/res/raw/` (format `.ogg`) : 10 couleurs (`c_*`), 2 phrases (`p_*`) et 3 félicitations (`pr_*`).
+Les 24 clips sont dans `app/src/main/res/raw/` (format `.ogg`) : 10 couleurs (`c_*`), 10 questions « أين الـ… ؟ » (`q_*`), « لا، هذا » (`p_la_hadha`) et 3 félicitations (`pr_*`).
 
-Ils ont été générés avec une voix de synthèse (espeak-ng, voix arabe) par `tools/generate_sounds.sh` : la voix est claire mais **robotique**. Pour une voix humaine (la vôtre ou celle d'un proche), enregistrez chaque mot et **remplacez les fichiers `.ogg` en gardant exactement les mêmes noms** ; il n'y a rien d'autre à modifier. Chaque push relance la compilation.
+Ils sont générés avec une voix neuronale arabe féminine (Piper, `ar_JO-SA_dii-high`) par `tools/generate_sounds.py`. Pour une voix humaine (la vôtre ou celle d'un proche), enregistrez chaque mot et **remplacez les fichiers `.ogg` en gardant exactement les mêmes noms** ; il n'y a rien d'autre à modifier. Chaque push relance la compilation.
 
 ## Compilation
 
