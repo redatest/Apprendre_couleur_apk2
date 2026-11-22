@@ -1,6 +1,6 @@
-# 🌈 الألوان — Apprendre les couleurs en darija algérienne
+# 🌈 الألوان — Apprendre les couleurs en arabe
 
-Application Android (APK) pour apprendre les couleurs en darija algérienne à un enfant de 3 ans.
+Application Android (APK) pour apprendre les couleurs en **arabe standard** à un enfant de 3 ans, avec des sons **intégrés à l'application** (aucune connexion ni voix à installer).
 
 ## 📥 Télécharger l'APK
 
@@ -8,25 +8,21 @@ Application Android (APK) pour apprendre les couleurs en darija algérienne à u
 
 (Page des versions : https://github.com/redatest/Apprendre_couleur_apk2/releases)
 
-Installation : ouvrir le lien sur le téléphone Android, télécharger, puis autoriser « Installer des applis inconnues » si Android le demande.
+Installation : ouvrir le lien sur le téléphone Android, télécharger, puis autoriser « Installer des applis inconnues » si Android le demande. Si la mise à jour est refusée, désinstaller l'ancienne version d'abord.
 
 ## Fonctionnement
 
-- **Mode apprentissage 📚** : 10 grosses cartes, chacune avec une forme colorée souriante (cercle, carré, triangle, étoile, cœur). Un appui = la forme tourne et rebondit, des confettis éclatent et le nom de la couleur est prononcé.
-- **Mode jeu 🎮** : l'application demande « وِين الحمر ؟ » ; l'enfant touche la bonne forme parmi 3. Bonne réponse = confettis + « برافو / مليح ». Mauvaise réponse = la carte tremble et l'application dit quelle couleur c'est.
+- **Mode apprentissage 📚** : 10 cartes avec une forme colorée souriante (cercle, carré, triangle, étoile, cœur). Un appui = la forme tourne et rebondit, des confettis éclatent et le nom de la couleur est dit deux fois.
+- **Mode jeu 🎮** : « أين اللون ؟ » puis le nom de la couleur ; l'enfant touche la bonne forme parmi 3. Bonne réponse = confettis + « رائع / ممتاز / أحسنت ». Mauvaise réponse = la carte tremble et l'app dit « لا، هذا … » suivi de la couleur touchée.
 
-Couleurs : حمر (hmar), زرق (zerq), خضر (khdhar), صفر (sfar), برتقالي (bortoqali), بنفسجي (banafsaji), وردي (wardi), بيض (bayad), كحل (kahl), قهوي (qahwi).
+Couleurs : أحمر (ahmar), أزرق (azraq), أخضر (akhdar), أصفر (asfar), برتقالي (burtuqali), بنفسجي (banafsaji), وردي (wardi), أبيض (abyad), أسود (aswad), بني (bunni).
 
-## Voix et son
+## Sons
 
-Ordre de priorité pour dire une couleur : **voix enregistrée par le parent** > synthèse vocale arabe d'Android > simple bip.
+Les 15 clips sont dans `app/src/main/res/raw/` (format `.ogg`) : 10 couleurs (`c_*`), 2 phrases (`p_*`) et 3 félicitations (`pr_*`).
 
-- **Enregistrer votre propre voix (recommandé, vrai darija)** : en mode apprentissage, appuyez longuement sur une carte → *Enregistrer* → dites le mot → *Arrêter*. Le téléphone demande l'autorisation du micro la première fois.
-- **Si un bandeau orange « Voix arabe introuvable » apparaît** : touchez-le pour installer la voix arabe (Synthèse vocale Google), puis revenez dans l'app. Sur les téléphones sans services Google (certains Huawei), utilisez plutôt l'enregistrement.
-- Pas de son du tout : vérifier le volume **média** (les touches de volume le contrôlent dans l'app) et que le téléphone n'est pas en silencieux.
+Ils ont été générés avec une voix de synthèse (espeak-ng, voix arabe) par `tools/generate_sounds.sh` : la voix est claire mais **robotique**. Pour une voix humaine (la vôtre ou celle d'un proche), enregistrez chaque mot et **remplacez les fichiers `.ogg` en gardant exactement les mêmes noms** ; il n'y a rien d'autre à modifier. Chaque push relance la compilation.
 
 ## Compilation
 
-L'APK est compilé automatiquement par GitHub Actions (`.github/workflows/build-apk.yml`) à chaque push sur `main` et publié dans la release `latest`. Pas besoin d'Android Studio. Pour compiler en local : `gradle assembleDebug`.
-
-Remarque : l'APK est signé avec une clé de debug générée à chaque build ; pour installer une nouvelle version, désinstaller l'ancienne si Android refuse la mise à jour.
+L'APK est compilé automatiquement par GitHub Actions (`.github/workflows/build-apk.yml`) à chaque push sur `main` et publié dans la release `latest`. Pour compiler en local : `gradle assembleDebug`.
