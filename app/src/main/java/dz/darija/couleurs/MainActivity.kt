@@ -45,6 +45,7 @@ private const val WRAP = ViewGroup.LayoutParams.WRAP_CONTENT
 
 class MainActivity : Activity() {
 
+    private lateinit var rootLayout: FrameLayout
     private lateinit var confetti: ConfettiView
     private lateinit var content: FrameLayout
     private lateinit var modeBtn: TextView
@@ -60,6 +61,7 @@ class MainActivity : Activity() {
         volumeControlStream = AudioManager.STREAM_MUSIC
 
         val root = FrameLayout(this)
+        rootLayout = root
         root.setBackgroundColor(0xFFFFF8E1.toInt())
 
         val column = LinearLayout(this)
@@ -103,23 +105,56 @@ class MainActivity : Activity() {
     // ---------- Sons intégrés (res/raw) ----------
 
     /** Joue les clips les uns après les autres ; un nouvel appel interrompt le précédent. */
-    private fun play(vararg ids: Int) {
+    private fun play(vararg ids: Int, onDone: (() -> Unit)? = null) {
         playToken++
         player?.release()
         player = null
-        playNext(ids.toList(), playToken)
+        playNext(ids.toList(), playToken, onDone)
     }
 
-    private fun playNext(ids: List<Int>, token: Int) {
-        if (ids.isEmpty() || token != playToken) return
-        val mp = MediaPlayer.create(this, ids[0]) ?: return
+    private fun playNext(ids: List<Int>, token: Int, onDone: (() -> Unit)?) {
+        if (token != playToken) return
+        if (ids.isEmpty()) {
+            onDone?.invoke() // fin de la dernière prononciation (si non interrompue)
+            return
+        }
+        val mp = MediaPlayer.create(this, ids[0])
+        if (mp == null) {
+            playNext(ids.drop(1), token, onDone)
+            return
+        }
         player = mp
         mp.setOnCompletionListener { m ->
             m.release()
             if (player === m) player = null
-            content.postDelayed({ playNext(ids.drop(1), token) }, 150)
+            content.postDelayed({ playNext(ids.drop(1), token, onDone) }, 150)
         }
         mp.start()
+    }
+
+    /** Pouce levé qui apparaît au centre de la carte puis disparaît. */
+    private fun showThumb(card: View) {
+        val tv = TextView(this)
+        tv.text = "👍"
+        tv.textSize = 72f
+        tv.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
+        val a = IntArray(2)
+        val b = IntArray(2)
+        card.getLocationInWindow(a)
+        rootLayout.getLocationInWindow(b)
+        val lp = FrameLayout.LayoutParams(WRAP, WRAP)
+        lp.leftMargin = a[0] - b[0] + card.width / 2 - tv.measuredWidth / 2
+        lp.topMargin = a[1] - b[1] + card.height / 2 - tv.measuredHeight / 2
+        tv.alpha = 0f
+        tv.scaleX = 0.2f
+        tv.scaleY = 0.2f
+        rootLayout.addView(tv, lp)
+        tv.animate().alpha(1f).scaleX(1.3f).scaleY(1.3f)
+            .setInterpolator(OvershootInterpolator(2.5f)).setDuration(350)
+            .withEndAction {
+                tv.animate().alpha(0f).setStartDelay(600).setDuration(300)
+                    .withEndAction { rootLayout.removeView(tv) }.start()
+            }.start()
     }
 
     override fun onDestroy() {
@@ -154,7 +189,7 @@ class MainActivity : Activity() {
                 row.addView(makeCard(item, true, dp(120)) { card, shape ->
                     bounce(shape)
                     burst(card, item.color)
-                    play(item.sound, item.sound)
+                    play(item.sound, onDone = { showThumb(card) })
                 }, lp)
             }
             list.addView(row, LinearLayout.LayoutParams(MATCH, WRAP))
@@ -217,11 +252,11 @@ class MainActivity : Activity() {
             locked = true
             bounce(shape)
             burst(card, item.color)
-            play(PRAISE.random())
+            play(PRAISE.random(), onDone = { showThumb(card) })
             content.postDelayed({
                 locked = false
                 if (gameMode) startRound()
-            }, 1900)
+            }, 2600)
         } else {
             ObjectAnimator.ofFloat(card, View.TRANSLATION_X, 0f, -dp(14).toFloat(), dp(14).toFloat(),
                 -dp(10).toFloat(), dp(10).toFloat(), 0f).setDuration(400).start()

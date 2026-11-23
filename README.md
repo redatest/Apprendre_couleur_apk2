@@ -12,8 +12,8 @@ Installation : ouvrir le lien sur le téléphone Android, télécharger, puis au
 
 ## Fonctionnement
 
-- **Mode apprentissage 📚** : 10 cartes avec une forme colorée souriante (cercle, carré, triangle, étoile, cœur). Un appui = la forme tourne et rebondit, des confettis éclatent et le nom de la couleur est dit deux fois.
-- **Mode jeu 🎮** : « أين الأحمر ؟ » (avec la couleur demandée) ; l'enfant touche la bonne forme parmi 3. Bonne réponse = confettis + « رائع / ممتاز / أحسنت ». Mauvaise réponse = la carte tremble et l'app dit « لا، هذا … » suivi de la couleur touchée.
+- **Mode apprentissage 📚** : 10 cartes avec une forme colorée souriante (cercle, carré, triangle, étoile, cœur). Un appui = la forme tourne et rebondit, des confettis éclatent et le nom de la couleur est dit une fois, puis un pouce levé 👍 apparaît.
+- **Mode jeu 🎮** : « أين الأحمر ؟ » (avec la couleur demandée) ; l'enfant touche la bonne forme parmi 3. Bonne réponse = confettis + « رائع / ممتاز / أحسنت » + pouce levé 👍. Mauvaise réponse = la carte tremble et l'app dit « لا، هذا … » suivi de la couleur touchée.
 
 Couleurs : أحمر (ahmar), أزرق (azraq), أخضر (akhdar), أصفر (asfar), برتقالي (burtuqali), بنفسجي (banafsaji), وردي (wardi), أبيض (abyad), أسود (aswad), بني (bunni).
 
