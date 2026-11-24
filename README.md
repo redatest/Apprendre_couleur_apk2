@@ -12,16 +12,18 @@ Installation : ouvrir le lien sur le téléphone Android, télécharger, puis au
 
 ## Fonctionnement
 
-- **Mode apprentissage 📚** : 10 cartes avec une forme colorée souriante (cercle, carré, triangle, étoile, cœur). Un appui = la forme tourne et rebondit, des confettis éclatent et le nom de la couleur est dit une fois, puis un pouce levé 👍 apparaît.
-- **Mode jeu 🎮** : « أين الأحمر ؟ » (avec la couleur demandée) ; l'enfant touche la bonne forme parmi 3. Bonne réponse = confettis + « رائع / ممتاز / أحسنت » + pouce levé 👍. Mauvaise réponse = la carte tremble et l'app dit « لا، هذا … » suivi de la couleur touchée.
+- **Interface 3D** : formes solides éclairées (sphère, cube, pyramide, étoile et cœur en volume) qui oscillent en continu, avec ombre au sol et un petit visage qui suit la rotation ; cartes et boutons « en relief » qui s'inclinent vers le doigt quand on appuie ; bulles brillantes qui flottent en fond ; confettis « papier » qui tournent en 3D.
+- **Mode apprentissage 📚** : 10 cartes. Un appui = la forme fait un tour sur elle-même, des confettis éclatent, la couleur est dite une fois, puis un pouce levé 👍 apparaît.
+- **Mode jeu 🎮** : « أين اللون ؟ » puis le nom de la couleur ; l'enfant touche la bonne forme parmi 3. Bonne réponse = confettis + « wow » (ou رائع / ممتاز / أحسنت) + pouce levé 👍. Mauvaise réponse = la carte tremble et l'app dit « لا، هذا… » suivi de la couleur touchée.
 
 Couleurs : أحمر (ahmar), أزرق (azraq), أخضر (akhdar), أصفر (asfar), برتقالي (burtuqali), بنفسجي (banafsaji), وردي (wardi), أبيض (abyad), أسود (aswad), بني (bunni).
 
 ## Sons
 
-Les 24 clips sont dans `app/src/main/res/raw/` (format `.ogg`) : 10 couleurs (`c_*`), 10 questions « أين الـ… ؟ » (`q_*`), « لا، هذا » (`p_la_hadha`) et 3 félicitations (`pr_*`).
+- **Prononciations des couleurs** : fichiers du dossier `colors/` (`red.mp3`, `blue.mp3`, … `wow.mp3`). `tools/build_sounds.py` les convertit dans `app/src/main/res/raw/` (silences coupés, volume normalisé).
+- **Phrases courtes** (« أين اللون ؟ », « لا، هذا », félicitations) : voix neuronale arabe (Piper, `ar_JO-SA_dii-high`), générées par le même script.
 
-Ils sont générés avec une voix neuronale arabe féminine (Piper, `ar_JO-SA_dii-high`) par `tools/generate_sounds.py`. Pour une voix humaine (la vôtre ou celle d'un proche), enregistrez chaque mot et **remplacez les fichiers `.ogg` en gardant exactement les mêmes noms** ; il n'y a rien d'autre à modifier. Chaque push relance la compilation.
+Pour changer un son : remplacez le fichier correspondant dans `colors/` (même nom), relancez `python3 tools/build_sounds.py` et poussez. 
 
 ## Compilation
 

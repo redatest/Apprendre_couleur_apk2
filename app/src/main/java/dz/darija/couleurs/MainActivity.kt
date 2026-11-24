@@ -5,10 +5,12 @@ import android.app.Activity
 import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
+import android.graphics.drawable.LayerDrawable
 import android.media.AudioManager
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.view.Gravity
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.OvershootInterpolator
@@ -20,25 +22,27 @@ import android.widget.TextView
 /**
  * ar    : mot affiché (arabe standard)
  * latin : transcription pour le parent
- * sound : clip audio du nom de la couleur (res/raw)
- * ask   : clip audio « أين الـ… ؟ » utilisé dans le jeu
+ * sound : prononciation (fichiers du dossier colors/, convertis dans res/raw)
  */
-data class ColorItem(val color: Int, val ar: String, val latin: String, val sound: Int, val ask: Int)
+data class ColorItem(val color: Int, val ar: String, val latin: String, val sound: Int)
 
 private val ITEMS = listOf(
-    ColorItem(0xFFE53935.toInt(), "أحمر", "ahmar", R.raw.c_ahmar, R.raw.q_ahmar),
-    ColorItem(0xFF1E88E5.toInt(), "أزرق", "azraq", R.raw.c_azraq, R.raw.q_azraq),
-    ColorItem(0xFF43A047.toInt(), "أخضر", "akhdar", R.raw.c_akhdar, R.raw.q_akhdar),
-    ColorItem(0xFFFDD835.toInt(), "أصفر", "asfar", R.raw.c_asfar, R.raw.q_asfar),
-    ColorItem(0xFFFB8C00.toInt(), "برتقالي", "burtuqali", R.raw.c_burtuqali, R.raw.q_burtuqali),
-    ColorItem(0xFF8E24AA.toInt(), "بنفسجي", "banafsaji", R.raw.c_banafsaji, R.raw.q_banafsaji),
-    ColorItem(0xFFF06292.toInt(), "وردي", "wardi", R.raw.c_wardi, R.raw.q_wardi),
-    ColorItem(0xFFFFFFFF.toInt(), "أبيض", "abyad", R.raw.c_abyad, R.raw.q_abyad),
-    ColorItem(0xFF212121.toInt(), "أسود", "aswad", R.raw.c_aswad, R.raw.q_aswad),
-    ColorItem(0xFF6D4C41.toInt(), "بني", "bunni", R.raw.c_bunni, R.raw.q_bunni)
+    ColorItem(0xFFE53935.toInt(), "أحمر", "ahmar", R.raw.c_ahmar),
+    ColorItem(0xFF1E88E5.toInt(), "أزرق", "azraq", R.raw.c_azraq),
+    ColorItem(0xFF43A047.toInt(), "أخضر", "akhdar", R.raw.c_akhdar),
+    ColorItem(0xFFFDD835.toInt(), "أصفر", "asfar", R.raw.c_asfar),
+    ColorItem(0xFFFB8C00.toInt(), "برتقالي", "burtuqali", R.raw.c_burtuqali),
+    ColorItem(0xFF8E24AA.toInt(), "بنفسجي", "banafsaji", R.raw.c_banafsaji),
+    ColorItem(0xFFF06292.toInt(), "وردي", "wardi", R.raw.c_wardi),
+    ColorItem(0xFFFFFFFF.toInt(), "أبيض", "abyad", R.raw.c_abyad),
+    ColorItem(0xFF212121.toInt(), "أسود", "aswad", R.raw.c_aswad),
+    ColorItem(0xFF6D4C41.toInt(), "بني", "bunni", R.raw.c_bunni)
 )
 
-private val PRAISE = intArrayOf(R.raw.pr_raai, R.raw.pr_mumtaz, R.raw.pr_ahsanta)
+// « wow » (tes fichiers) revient plus souvent que les félicitations de la voix de synthèse
+private val PRAISE = intArrayOf(
+    R.raw.pr_wow, R.raw.pr_wow, R.raw.pr_raai, R.raw.pr_mumtaz, R.raw.pr_ahsanta
+)
 
 private const val MATCH = ViewGroup.LayoutParams.MATCH_PARENT
 private const val WRAP = ViewGroup.LayoutParams.WRAP_CONTENT
@@ -62,7 +66,11 @@ class MainActivity : Activity() {
 
         val root = FrameLayout(this)
         rootLayout = root
-        root.setBackgroundColor(0xFFFFF8E1.toInt())
+        root.background = GradientDrawable(
+            GradientDrawable.Orientation.TOP_BOTTOM,
+            intArrayOf(0xFF81D4FA.toInt(), 0xFFE1F5FE.toInt(), 0xFFFFF8E1.toInt())
+        )
+        root.addView(BubblesView(this), FrameLayout.LayoutParams(MATCH, MATCH))
 
         val column = LinearLayout(this)
         column.orientation = LinearLayout.VERTICAL
@@ -72,9 +80,10 @@ class MainActivity : Activity() {
         header.gravity = Gravity.CENTER_VERTICAL
         val title = TextView(this)
         title.text = "🌈 الألوان"
-        title.textSize = 30f
+        title.textSize = 32f
         title.setTypeface(null, Typeface.BOLD)
-        title.setTextColor(0xFF4E342E.toInt())
+        title.setTextColor(0xFFFFFFFF.toInt())
+        title.setShadowLayer(1f, 0f, dp(4).toFloat(), 0xFF5D4037.toInt()) // lettres « extrudées »
         header.addView(title, LinearLayout.LayoutParams(0, WRAP, 1f))
 
         modeBtn = TextView(this)
@@ -82,11 +91,13 @@ class MainActivity : Activity() {
         modeBtn.textSize = 22f
         modeBtn.setTextColor(Color.WHITE)
         modeBtn.setTypeface(null, Typeface.BOLD)
-        modeBtn.setPadding(dp(20), dp(10), dp(20), dp(10))
-        modeBtn.background = GradientDrawable().apply {
-            setColor(0xFF7E57C2.toInt())
-            cornerRadius = dp(28).toFloat()
-        }
+        modeBtn.gravity = Gravity.CENTER
+        val depth = dp(7)
+        modeBtn.setPadding(dp(22), dp(10), dp(22), dp(10) + depth)
+        modeBtn.background = button3d(0xFF9575CD.toInt(), 0xFF7E57C2.toInt(), 0xFF4527A0.toInt(), dp(28), depth)
+        modeBtn.elevation = dp(6).toFloat()
+        modeBtn.cameraDistance = resources.displayMetrics.density * 1600f
+        attachPressEffect(modeBtn, 10f)
         modeBtn.setOnClickListener { toggleMode() }
         header.addView(modeBtn, LinearLayout.LayoutParams(WRAP, WRAP))
         column.addView(header, LinearLayout.LayoutParams(MATCH, WRAP))
@@ -127,7 +138,7 @@ class MainActivity : Activity() {
         mp.setOnCompletionListener { m ->
             m.release()
             if (player === m) player = null
-            content.postDelayed({ playNext(ids.drop(1), token, onDone) }, 150)
+            content.postDelayed({ playNext(ids.drop(1), token, onDone) }, 120)
         }
         mp.start()
     }
@@ -177,6 +188,7 @@ class MainActivity : Activity() {
         play() // coupe le son en cours
         content.removeAllViews()
         val scroll = ScrollView(this)
+        scroll.isVerticalScrollBarEnabled = false
         val list = LinearLayout(this)
         list.orientation = LinearLayout.VERTICAL
         list.setPadding(0, dp(8), 0, dp(24))
@@ -208,29 +220,31 @@ class MainActivity : Activity() {
         col.gravity = Gravity.CENTER
 
         val prompt = TextView(this)
-        prompt.text = "🔊  أين ال${target.ar}؟"
-        prompt.textSize = 32f
+        prompt.text = "🔊  أين اللون؟"
+        prompt.textSize = 34f
         prompt.gravity = Gravity.CENTER
         prompt.setTypeface(null, Typeface.BOLD)
-        prompt.setTextColor(0xFF4E342E.toInt())
+        prompt.setTextColor(0xFFFFFFFF.toInt())
+        prompt.setShadowLayer(1f, 0f, dp(4).toFloat(), 0xFF5D4037.toInt())
         prompt.setPadding(0, 0, 0, dp(6))
-        prompt.setOnClickListener { play(target.ask) }
+        prompt.setOnClickListener { play(R.raw.p_ayna, target.sound) }
         col.addView(prompt, LinearLayout.LayoutParams(MATCH, WRAP))
 
         val word = TextView(this)
         word.text = target.ar
-        word.textSize = 44f
+        word.textSize = 48f
         word.gravity = Gravity.CENTER
         word.setTypeface(null, Typeface.BOLD)
-        word.setTextColor(0xFF4E342E.toInt())
+        word.setTextColor(0xFFFFFFFF.toInt())
+        word.setShadowLayer(1f, 0f, dp(5).toFloat(), 0xFF5D4037.toInt())
         col.addView(word, LinearLayout.LayoutParams(MATCH, WRAP))
 
         val latin = TextView(this)
         latin.text = target.latin
         latin.textSize = 16f
         latin.gravity = Gravity.CENTER
-        latin.setTextColor(0xFF8D6E63.toInt())
-        latin.setPadding(0, 0, 0, dp(24))
+        latin.setTextColor(0xFF5D4037.toInt())
+        latin.setPadding(0, dp(4), 0, dp(24))
         col.addView(latin, LinearLayout.LayoutParams(MATCH, WRAP))
 
         val row = LinearLayout(this)
@@ -243,7 +257,7 @@ class MainActivity : Activity() {
         col.addView(row, LinearLayout.LayoutParams(MATCH, WRAP))
 
         content.addView(col, FrameLayout.LayoutParams(MATCH, MATCH))
-        content.postDelayed({ if (gameMode) play(target.ask) }, 500)
+        content.postDelayed({ if (gameMode) play(R.raw.p_ayna, target.sound) }, 500)
     }
 
     private fun onChoice(item: ColorItem, card: View, shape: ShapeView) {
@@ -264,7 +278,44 @@ class MainActivity : Activity() {
         }
     }
 
-    // ---------- Éléments d'interface ----------
+    // ---------- Éléments d'interface 3D ----------
+
+    /** Bouton « en relief » : face dégradée + tranche plus sombre en dessous. */
+    private fun button3d(top: Int, bottom: Int, edge: Int, radius: Int, depth: Int): LayerDrawable {
+        val side = GradientDrawable()
+        side.setColor(edge)
+        side.cornerRadius = radius.toFloat()
+        val face = GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, intArrayOf(top, bottom))
+        face.cornerRadius = radius.toFloat()
+        val ld = LayerDrawable(arrayOf(side, face))
+        ld.setLayerInset(0, 0, depth, 0, 0)
+        ld.setLayerInset(1, 0, 0, 0, depth)
+        return ld
+    }
+
+    /** Effet 3D au toucher : la carte s'incline vers le doigt, s'enfonce, puis rebondit. */
+    private fun attachPressEffect(v: View, tiltDeg: Float) {
+        v.setOnTouchListener { view, e ->
+            when (e.actionMasked) {
+                MotionEvent.ACTION_DOWN, MotionEvent.ACTION_MOVE -> {
+                    val nx = (e.x / view.width.coerceAtLeast(1) - 0.5f) * 2f
+                    val ny = (e.y / view.height.coerceAtLeast(1) - 0.5f) * 2f
+                    view.animate().cancel()
+                    view.rotationY = nx * tiltDeg
+                    view.rotationX = -ny * tiltDeg
+                    view.scaleX = 0.95f
+                    view.scaleY = 0.95f
+                    view.translationZ = -dp(3).toFloat()
+                }
+                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                    view.animate().rotationX(0f).rotationY(0f).scaleX(1f).scaleY(1f)
+                        .translationZ(0f)
+                        .setInterpolator(OvershootInterpolator(3f)).setDuration(380).start()
+                }
+            }
+            false // laisse passer le clic
+        }
+    }
 
     private fun makeCard(
         item: ColorItem,
@@ -272,16 +323,20 @@ class MainActivity : Activity() {
         shapeSize: Int,
         onTap: (LinearLayout, ShapeView) -> Unit
     ): LinearLayout {
+        val depth = dp(8)
         val card = LinearLayout(this)
         card.orientation = LinearLayout.VERTICAL
         card.gravity = Gravity.CENTER_HORIZONTAL
-        card.setPadding(dp(8), dp(14), dp(8), dp(14))
-        card.background = GradientDrawable().apply {
-            setColor(Color.WHITE)
-            cornerRadius = dp(28).toFloat()
-            setStroke(dp(4), darker(item.color))
-        }
-        card.elevation = dp(4).toFloat()
+        card.setPadding(dp(8), dp(12), dp(8), dp(12) + depth)
+        card.background = button3d(
+            Color.WHITE,
+            mixColor(Color.WHITE, item.color, 0.25f),
+            mixColor(item.color, Color.BLACK, 0.3f),
+            dp(28), depth
+        )
+        card.elevation = dp(8).toFloat()
+        card.cameraDistance = resources.displayMetrics.density * 1600f
+        attachPressEffect(card, 14f)
 
         val shape = ShapeView(this, item.color, ITEMS.indexOf(item))
         card.addView(shape, LinearLayout.LayoutParams(shapeSize, shapeSize))
@@ -306,13 +361,14 @@ class MainActivity : Activity() {
         return card
     }
 
-    private fun bounce(shape: View) {
+    private fun bounce(shape: ShapeView) {
+        shape.spin()
         shape.animate().cancel()
         shape.animate()
-            .scaleX(1.35f).scaleY(1.35f).rotationBy(360f).setDuration(220)
+            .scaleX(1.3f).scaleY(1.3f).setDuration(200)
             .withEndAction {
                 shape.animate().scaleX(1f).scaleY(1f)
-                    .setInterpolator(OvershootInterpolator(3f)).setDuration(350).start()
+                    .setInterpolator(OvershootInterpolator(3f)).setDuration(380).start()
             }.start()
     }
 
@@ -322,13 +378,6 @@ class MainActivity : Activity() {
         card.getLocationInWindow(a)
         confetti.getLocationInWindow(b)
         confetti.burst(a[0] - b[0] + card.width / 2f, a[1] - b[1] + card.height / 2f, color)
-    }
-
-    private fun darker(c: Int): Int {
-        val hsv = FloatArray(3)
-        Color.colorToHSV(c, hsv)
-        hsv[2] *= 0.75f
-        return Color.HSVToColor(hsv)
     }
 
     private fun dp(v: Int): Int = (v * resources.displayMetrics.density).toInt()
