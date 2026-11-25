@@ -220,8 +220,8 @@ class MainActivity : Activity() {
         col.gravity = Gravity.CENTER
 
         val prompt = TextView(this)
-        prompt.text = "🔊  Where is the colour?"
-        prompt.textSize = 28f
+        prompt.text = "🔊  أين اللون؟"
+        prompt.textSize = 34f
         prompt.gravity = Gravity.CENTER
         prompt.setTypeface(null, Typeface.BOLD)
         prompt.setTextColor(0xFFFFFFFF.toInt())
