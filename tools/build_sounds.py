@@ -3,7 +3,8 @@
 
 1) Prononciations des couleurs : fichiers du dossier colors/ (red.mp3, blue.mp3, ... wow.mp3)
    -> silences coupés, volume normalisé -> c_*.ogg et pr_wow.ogg.
-2) Phrases courtes (« أين اللون ؟ », « لا، هذا », félicitations) : voix neuronale Piper (optionnel).
+   + « where is the colour.mp3 » -> p_ayna (question du jeu), « not this.mp3 » -> p_la_hadha (mauvaise réponse).
+2) Félicitations رائع / ممتاز / أحسنت : voix neuronale Piper (optionnel).
    pip install piper-tts ; voix : vits-piper-ar_JO-SA_dii-high (sherpa-onnx, release « tts-models »)
 
 Usage : python3 tools/build_sounds.py [dossier_voix_piper]
@@ -20,6 +21,7 @@ MAP = {  # fichier colors/  ->  ressource Android
     "red": "c_ahmar", "blue": "c_azraq", "green": "c_akhdar", "yellow": "c_asfar",
     "orange": "c_burtuqali", "purple": "c_banafsaji", "pink": "c_wardi",
     "white": "c_abyad", "black": "c_aswad", "brown": "c_bunni", "wow": "pr_wow",
+    "where is the colour": "p_ayna", "not this": "p_la_hadha",
 }
 AF = ("silenceremove=start_periods=1:start_threshold=-45dB:start_silence=0.03,"
       "areverse,silenceremove=start_periods=1:start_threshold=-45dB:start_silence=0.06,areverse,"
@@ -32,7 +34,7 @@ def encode(src, name, sr):
     print("ok", name)
 
 for f in glob.glob(os.path.join(RAW, "c_*.ogg")) + glob.glob(os.path.join(RAW, "q_*.ogg")) + \
-        glob.glob(os.path.join(RAW, "pr_wow.ogg")):
+        glob.glob(os.path.join(RAW, "pr_wow.ogg")) + glob.glob(os.path.join(RAW, "p_*.ogg")):
     os.remove(f)
 for src, name in MAP.items():
     encode(os.path.join(COLORS, src + ".mp3"), name, 44100)
@@ -42,8 +44,6 @@ if len(sys.argv) > 1:
     voice = PiperVoice.load(glob.glob(os.path.join(sys.argv[1], "*.onnx"))[0])
     cfg = SynthesisConfig(length_scale=1.15, noise_scale=0.5, noise_w_scale=0.6)
     PHRASES = {
-        "p_ayna": "أَيْنَ اللَّوْن؟",
-        "p_la_hadha": "لَا، هَذَا",
         "pr_raai": "رَائِع!",
         "pr_mumtaz": "مُمْتَاز!",
         "pr_ahsanta": "أَحْسَنْتَ!",

@@ -21,22 +21,22 @@ import android.widget.TextView
 
 /**
  * ar    : mot affiché (arabe standard)
- * latin : transcription pour le parent
+ * latin : transcription pour le parent ; en : nom anglais
  * sound : prononciation (fichiers du dossier colors/, convertis dans res/raw)
  */
-data class ColorItem(val color: Int, val ar: String, val latin: String, val sound: Int)
+data class ColorItem(val color: Int, val ar: String, val latin: String, val en: String, val sound: Int)
 
 private val ITEMS = listOf(
-    ColorItem(0xFFE53935.toInt(), "أحمر", "ahmar", R.raw.c_ahmar),
-    ColorItem(0xFF1E88E5.toInt(), "أزرق", "azraq", R.raw.c_azraq),
-    ColorItem(0xFF43A047.toInt(), "أخضر", "akhdar", R.raw.c_akhdar),
-    ColorItem(0xFFFDD835.toInt(), "أصفر", "asfar", R.raw.c_asfar),
-    ColorItem(0xFFFB8C00.toInt(), "برتقالي", "burtuqali", R.raw.c_burtuqali),
-    ColorItem(0xFF8E24AA.toInt(), "بنفسجي", "banafsaji", R.raw.c_banafsaji),
-    ColorItem(0xFFF06292.toInt(), "وردي", "wardi", R.raw.c_wardi),
-    ColorItem(0xFFFFFFFF.toInt(), "أبيض", "abyad", R.raw.c_abyad),
-    ColorItem(0xFF212121.toInt(), "أسود", "aswad", R.raw.c_aswad),
-    ColorItem(0xFF6D4C41.toInt(), "بني", "bunni", R.raw.c_bunni)
+    ColorItem(0xFFE53935.toInt(), "أحمر", "ahmar", "red", R.raw.c_ahmar),
+    ColorItem(0xFF1E88E5.toInt(), "أزرق", "azraq", "blue", R.raw.c_azraq),
+    ColorItem(0xFF43A047.toInt(), "أخضر", "akhdar", "green", R.raw.c_akhdar),
+    ColorItem(0xFFFDD835.toInt(), "أصفر", "asfar", "yellow", R.raw.c_asfar),
+    ColorItem(0xFFFB8C00.toInt(), "برتقالي", "burtuqali", "orange", R.raw.c_burtuqali),
+    ColorItem(0xFF8E24AA.toInt(), "بنفسجي", "banafsaji", "purple", R.raw.c_banafsaji),
+    ColorItem(0xFFF06292.toInt(), "وردي", "wardi", "pink", R.raw.c_wardi),
+    ColorItem(0xFFFFFFFF.toInt(), "أبيض", "abyad", "white", R.raw.c_abyad),
+    ColorItem(0xFF212121.toInt(), "أسود", "aswad", "black", R.raw.c_aswad),
+    ColorItem(0xFF6D4C41.toInt(), "بني", "bunni", "brown", R.raw.c_bunni)
 )
 
 // « wow » (tes fichiers) revient plus souvent que les félicitations de la voix de synthèse
@@ -220,8 +220,8 @@ class MainActivity : Activity() {
         col.gravity = Gravity.CENTER
 
         val prompt = TextView(this)
-        prompt.text = "🔊  أين اللون؟"
-        prompt.textSize = 34f
+        prompt.text = "🔊  Where is the colour?"
+        prompt.textSize = 28f
         prompt.gravity = Gravity.CENTER
         prompt.setTypeface(null, Typeface.BOLD)
         prompt.setTextColor(0xFFFFFFFF.toInt())
@@ -240,7 +240,7 @@ class MainActivity : Activity() {
         col.addView(word, LinearLayout.LayoutParams(MATCH, WRAP))
 
         val latin = TextView(this)
-        latin.text = target.latin
+        latin.text = "${target.latin} · ${target.en}"
         latin.textSize = 16f
         latin.gravity = Gravity.CENTER
         latin.setTextColor(0xFF5D4037.toInt())
@@ -351,7 +351,7 @@ class MainActivity : Activity() {
             card.addView(ar, LinearLayout.LayoutParams(MATCH, WRAP))
 
             val lat = TextView(this)
-            lat.text = item.latin
+            lat.text = "${item.latin} · ${item.en}"
             lat.textSize = 16f
             lat.gravity = Gravity.CENTER
             lat.setTextColor(0xFF8D6E63.toInt())
